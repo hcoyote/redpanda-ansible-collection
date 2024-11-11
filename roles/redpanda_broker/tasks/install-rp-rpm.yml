@@ -3,6 +3,18 @@
   ansible.builtin.set_fact:
     redpanda_package_name: "redpanda{{ '' if redpanda_version=='latest' else ('=' if ansible_os_family == 'Debian' else '-') + redpanda_version }}"
 
+- name: Set fact for rpk package name
+  ansible.builtin.set_fact:
+    redpanda_rpk_package_name: "redpanda-rpk{{ '' if redpanda_version=='latest' else ('=' if ansible_os_family == 'Debian' else '-') + redpanda_version }}"
+
+- name: Set fact for redpanda fips package name
+  ansible.builtin.set_fact:
+    redpanda_fips_package_name: "redpanda-fips{{ '' if redpanda_version=='latest' else ('=' if ansible_os_family == 'Debian' else '-') + redpanda_version }}"
+
+- name: Set fact for rpk fips package name
+  ansible.builtin.set_fact:
+    redpanda_rpk_fips_package_name: "redpanda-rpk-fips{{ '' if redpanda_version=='latest' else ('=' if ansible_os_family == 'Debian' else '-') + redpanda_version }}"
+
 - name: Install redpanda from repository
   ansible.builtin.package:
     name:
@@ -10,6 +22,34 @@
     state: "{{ redpanda_install_status }}"
     update_cache: true
   register: package_result
+
+- name: Install redpanda-rpk from repository
+  ansible.builtin.package:
+    name:
+      - "{{ redpanda_rpk_package_name }}"
+    state: "{{ redpanda_install_status }}"
+    update_cache: true
+  register: package_result
+
+- name: Install redpanda-fips from repository
+  ansible.builtin.package:
+    name:
+      - "{{ redpanda_fips_package_name }}"
+    state: "{{ redpanda_install_status }}"
+    update_cache: true
+  register: package_result
+  when:
+   - enable_fips | default(false) | bool
+
+- name: Install redpanda-rpk-fips from repository
+  ansible.builtin.package:
+    name:
+      - "{{ redpanda_rpk_fips_package_name }}"
+    state: "{{ redpanda_install_status }}"
+    update_cache: true
+  register: package_result
+  when:
+   - enable_fips | default(false) | bool
 
 - name: Set data dir file perms
   ansible.builtin.file:
