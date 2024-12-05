@@ -86,5 +86,5 @@ development_build: false
 # see https://docs.redpanda.com/current/manage/security/fips-compliance/
 enable_fips: false
 fips_mode: disabled
-openssl_config_file: "/opt/redpanda/openssl/openssl.cnf"
-openssl_module_directory: "/opt/redpanda/lib/ossl-modules/"
+fips_openssl_config_file: "/opt/redpanda/openssl/openssl.cnf"
+fips_openssl_module_directory: "/opt/redpanda/lib/ossl-modules/"
