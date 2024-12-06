@@ -15,6 +15,14 @@
   ansible.builtin.set_fact:
     redpanda_rpk_fips_package_name: "redpanda-rpk-fips{{ '' if redpanda_version=='latest' else ('=' if ansible_os_family == 'Debian' else '-') + redpanda_version }}"
 
+#
+# NOTE: Ordering matters here because of the package dependency chain.
+#       DO NOT REORDER THESE INSTALLS -- THIS IS A HACK
+#
+# If you change the package ordering so that redpanda installs before redpanda-fips
+# you will drag in the wrong rpk package and this will subsequently cause the fips
+# package installs to fail. 
+#
 - name: Install redpanda-fips from repository
   ansible.builtin.package:
     name:
@@ -35,7 +43,6 @@
   when:
    - enable_fips | default(false) | bool
 
-
 - name: Install redpanda from repository
   ansible.builtin.package:
     name:
@@ -44,6 +51,10 @@
     update_cache: true
   register: package_result
 
+
+# when enable_fips is set, we have to ensure we don't install the non-FIPS
+# version of rpk, as the redpanda-rpk and redpanda-rpk-fips packages conflict 
+# and are mutually exclusive.
 - name: Install redpanda-rpk from repository
   ansible.builtin.package:
     name:
