@@ -2,7 +2,7 @@
 - name: Check OS FIPS mode with /usr/bin/fips-mode-setup
   ansible.builtin.command:
     cmd: /usr/bin/fips-mode-setup --is-enabled
-  register: current_fips_mode
+  register: os_fips_mode
   when:
     - ansible_os_family == "RedHat"
   changed_when: false
