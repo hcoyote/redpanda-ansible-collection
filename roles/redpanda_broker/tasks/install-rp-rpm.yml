@@ -23,6 +23,12 @@
 # you will drag in the wrong rpk package and this will subsequently cause the fips
 # package installs to fail. 
 #
+
+- name: check FIPS mode
+  ansible.builtin.include_tasks: fips-assert.yml
+  when: 
+   - enable_fips | default(false) | bool
+  
 - name: Install redpanda-fips from repository
   ansible.builtin.package:
     name:
