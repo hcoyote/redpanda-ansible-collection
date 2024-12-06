@@ -3,6 +3,10 @@
   ansible.builtin.set_fact:
     redpanda_package_name: "redpanda{{ '' if redpanda_version=='latest' else ('=' if ansible_os_family == 'Debian' else '-') + redpanda_version }}"
 
+- name: Set fact for redpanda-tuner package name
+  ansible.builtin.set_fact:
+    redpanda_tuner_package_name: "redpanda-tuner{{ '' if redpanda_version=='latest' else ('=' if ansible_os_family == 'Debian' else '-') + redpanda_version }}"
+
 - name: Set fact for rpk package name
   ansible.builtin.set_fact:
     redpanda_rpk_package_name: "redpanda-rpk{{ '' if redpanda_version=='latest' else ('=' if ansible_os_family == 'Debian' else '-') + redpanda_version }}"
@@ -56,6 +60,15 @@
     state: "{{ redpanda_install_status }}"
     update_cache: true
   register: package_result
+
+- name: Install redpanda-tuner from repository
+  ansible.builtin.package:
+    name:
+      - "{{ redpanda_tuner_package_name }}"
+    state: "{{ redpanda_install_status }}"
+    update_cache: true
+  register: package_result
+
 
 
 # when enable_fips is set, we have to ensure we don't install the non-FIPS
